@@ -26,56 +26,43 @@ export const NavigationLayout: React.FC<Props> = ({ children }) => {
       key: '/home',
       label: 'Dispatcher',
       position: 'leftbar',
-
       onClick: () => goTo('/home'),
     },
-
-    {
-      key: '/live-monitoring',
-      label: 'Live Monitoring',
-      position: 'leftbar',
-
-      onClick: () => goTo('/live-monitoring'),
-    },
-
-    {
-      key: '/playback',
-      label: 'Playback',
-      position: 'leftbar',
-
-      onClick: () => goTo('/playback'),
-    },
-
-    {
-      key: '/face-search',
-      label: 'Face Search',
-      position: 'leftbar',
-
-      onClick: () => goTo('/face-search'),
-    },
-
-    {
-      key: '/camera-management',
-      label: 'Camera Management',
-      position: 'leftbar',
-
-      onClick: () => goTo('/camera-management'),
-    },
-
     {
       key: '/analyst',
       label: 'Analyst',
       position: 'leftbar',
-
       onClick: () => goTo('/analyst'),
     },
-
     {
       key: '/administrator',
       label: 'Administrator',
       position: 'leftbar',
-
       onClick: () => goTo('/administrator'),
+    },
+    {
+      key: '/live-monitoring',
+      label: 'Live Monitoring',
+      position: 'leftbar',
+      onClick: () => goTo('/live-monitoring'),
+    },
+    {
+      key: '/playback',
+      label: 'Playback',
+      position: 'leftbar',
+      onClick: () => goTo('/playback'),
+    },
+    {
+      key: '/face-search',
+      label: 'Face Search',
+      position: 'leftbar',
+      onClick: () => goTo('/face-search'),
+    },
+    {
+      key: '/camera-management',
+      label: 'Camera Management',
+      position: 'leftbar',
+      onClick: () => goTo('/camera-management'),
     },
   ]
 
