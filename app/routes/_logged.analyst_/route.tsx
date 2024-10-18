@@ -28,6 +28,8 @@ export default function AnalystPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
+  const [filters, setFilters] = useState({})
+
   const {
     data: incidents,
     isLoading,
@@ -40,6 +42,7 @@ export default function AnalystPage() {
       surveillanceObject: true,
       department: true,
     },
+    where: filters,
     skip: (currentPage - 1) * pageSize,
     take: pageSize,
   })
@@ -51,8 +54,26 @@ export default function AnalystPage() {
     Api.surveillanceObject.findMany.useQuery()
 
   const handleSearch = (values: any) => {
-    // Implement search logic here
-    console.log('Search values:', values)
+    const newFilters: any = {}
+    if (values.dateRange) {
+      newFilters.timestamp = {
+        gte: values.dateRange[0].toISOString(),
+        lte: values.dateRange[1].toISOString(),
+      }
+    }
+    if (values.group) newFilters.incidentGroupId = values.group
+    if (values.incidentType) newFilters.incidentTypeId = values.incidentType
+    if (values.vehicleNumber) newFilters.vehicleNumber = { contains: values.vehicleNumber }
+    if (values.wagonNumber) newFilters.wagonNumber = { contains: values.wagonNumber }
+    if (values.attributeValue) newFilters.attributeValue = { contains: values.attributeValue }
+    if (values.comments) newFilters.comments = { contains: values.comments }
+    if (values.priority) newFilters.priority = values.priority
+    if (values.status) newFilters.status = values.status
+    if (values.department) newFilters.departmentId = values.department
+    if (values.surveillanceObject) newFilters.surveillanceObjectId = values.surveillanceObject
+
+    setFilters(newFilters)
+    setCurrentPage(1)
     refetch()
   }
 
@@ -134,18 +155,18 @@ export default function AnalystPage() {
         <Form
           form={form}
           onFinish={handleSearch}
-          layout="vertical"
+          layout="inline"
           style={{ marginTop: '24px' }}
         >
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-            <Form.Item name="dateRange" label="Date and Time Range">
-              <RangePicker showTime />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between' }}>
+            <Form.Item name="dateRange" label="Date and Time Range" style={{ flex: '1 1 300px' }}>
+              <RangePicker showTime style={{ width: '100%' }} />
             </Form.Item>
-            <Form.Item name="specificHours" valuePropName="checked">
+            <Form.Item name="specificHours" valuePropName="checked" style={{ flex: '0 0 auto' }}>
               <Checkbox>Specific Hours</Checkbox>
             </Form.Item>
-            <Form.Item name="group" label="Group">
-              <Select style={{ width: 200 }}>
+            <Form.Item name="group" label="Group" style={{ flex: '1 1 200px' }}>
+              <Select style={{ width: '100%' }}>
                 {incidentGroups?.map(group => (
                   <Select.Option key={group.id} value={group.id}>
                     {group.name}
@@ -153,8 +174,8 @@ export default function AnalystPage() {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item name="incidentType" label="Incident Type">
-              <Select style={{ width: 200 }}>
+            <Form.Item name="incidentType" label="Incident Type" style={{ flex: '1 1 200px' }}>
+              <Select style={{ width: '100%' }}>
                 {incidentTypes?.map(type => (
                   <Select.Option key={type.id} value={type.id}>
                     {type.name}
@@ -162,33 +183,33 @@ export default function AnalystPage() {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item name="vehicleNumber" label="Vehicle Number">
+            <Form.Item name="vehicleNumber" label="Vehicle Number" style={{ flex: '1 1 200px' }}>
               <Input />
             </Form.Item>
-            <Form.Item name="wagonNumber" label="Wagon Number">
+            <Form.Item name="wagonNumber" label="Wagon Number" style={{ flex: '1 1 200px' }}>
               <Input />
             </Form.Item>
-            <Form.Item name="attributeValue" label="Attribute Value">
+            <Form.Item name="attributeValue" label="Attribute Value" style={{ flex: '1 1 200px' }}>
               <Input />
             </Form.Item>
-            <Form.Item name="comments" label="Comments">
-              <Input.TextArea />
+            <Form.Item name="comments" label="Comments" style={{ flex: '1 1 300px' }}>
+              <Input.TextArea rows={1} />
             </Form.Item>
-            <Form.Item name="priority" label="Priority">
-              <Select style={{ width: 200 }}>
+            <Form.Item name="priority" label="Priority" style={{ flex: '1 1 200px' }}>
+              <Select style={{ width: '100%' }}>
                 <Select.Option value="low">Low</Select.Option>
                 <Select.Option value="medium">Medium</Select.Option>
                 <Select.Option value="high">High</Select.Option>
               </Select>
             </Form.Item>
-            <Form.Item name="status" label="Status">
-              <Select style={{ width: 200 }}>
+            <Form.Item name="status" label="Status" style={{ flex: '1 1 200px' }}>
+              <Select style={{ width: '100%' }}>
                 <Select.Option value="new">New</Select.Option>
                 <Select.Option value="resolved">Resolved</Select.Option>
               </Select>
             </Form.Item>
-            <Form.Item name="department" label="Department">
-              <Select style={{ width: 200 }}>
+            <Form.Item name="department" label="Department" style={{ flex: '1 1 200px' }}>
+              <Select style={{ width: '100%' }}>
                 {departments?.map(dept => (
                   <Select.Option key={dept.id} value={dept.id}>
                     {dept.name}
@@ -196,8 +217,8 @@ export default function AnalystPage() {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item name="surveillanceObject" label="Surveillance Object">
-              <Select style={{ width: 200 }}>
+            <Form.Item name="surveillanceObject" label="Surveillance Object" style={{ flex: '1 1 200px' }}>
+              <Select style={{ width: '100%' }}>
                 {surveillanceObjects?.map(obj => (
                   <Select.Option key={obj.id} value={obj.id}>
                     {obj.name}
@@ -206,7 +227,7 @@ export default function AnalystPage() {
               </Select>
             </Form.Item>
           </div>
-          <Form.Item>
+          <Form.Item style={{ marginTop: '16px', width: '100%' }}>
             <Space>
               <Button type="primary" htmlType="submit">
                 Search
@@ -228,7 +249,7 @@ export default function AnalystPage() {
         <Pagination
           current={currentPage}
           pageSize={pageSize}
-          total={13000000} // Replace with actual total count
+          total={incidents?.length || 0}
           onChange={(page, pageSize) => {
             setCurrentPage(page)
             setPageSize(pageSize)
