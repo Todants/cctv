@@ -242,23 +242,22 @@ export default function AnalystPage() {
               style={{ marginTop: '12px', width: '100%', fontSize: '12px' }}
               size="small"
             />
-
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={incidents?.length || 0}
-              onChange={(page, pageSize) => {
-                setCurrentPage(page)
-                setPageSize(pageSize)
-              }}
-              showSizeChanger
-              showQuickJumper
-              showTotal={total => `Total ${total} items`}
-              style={{ marginTop: '16px', textAlign: 'right' }}
-            />
           </div>
         </div>
-        <div style={{ height: '50%' }}></div>
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={incidents?.length || 0}
+          onChange={(page, pageSize) => {
+            setCurrentPage(page)
+            setPageSize(pageSize)
+          }}
+          showSizeChanger
+          showQuickJumper
+          showTotal={total => `Total ${total} items`}
+          style={{ marginTop: '16px', textAlign: 'right' }}
+        />
+        <div style={{ height: 'calc(50% - 50px)' }}></div>
       </div>
     </PageLayout>
   )
