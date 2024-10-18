@@ -129,8 +129,8 @@ export default function AnalystPage() {
       title: 'Actions',
       key: 'actions',
       render: (text: string, record: any) => (
-        <Space size="middle">
-          <Button onClick={() => handleViewHistory(record.id)}>
+        <Space size="small">
+          <Button onClick={() => handleViewHistory(record.id)} size="small">
             View History
           </Button>
         </Space>
@@ -146,7 +146,7 @@ export default function AnalystPage() {
   return (
     <PageLayout layout="full-width">
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <div style={{ padding: '8px', width: '100%' }}>
+        <div style={{ padding: '8px', width: '100%', height: '50%', display: 'flex', flexDirection: 'column' }}>
           <Form
             form={form}
             onFinish={handleSearch}
@@ -232,32 +232,33 @@ export default function AnalystPage() {
               </Space>
             </Form.Item>
           </Form>
-        </div>
-        <div style={{ flex: 1, overflow: 'auto', padding: '12px', width: '100%' }}>
-          <Table
-            columns={columns}
-            dataSource={incidents}
-            rowKey="id"
-            loading={isLoading}
-            pagination={false}
-            style={{ marginTop: '12px', width: '100%' }}
-            size="small"
-          />
+          <div style={{ flex: 1, overflow: 'auto', padding: '12px', width: '100%' }}>
+            <Table
+              columns={columns}
+              dataSource={incidents}
+              rowKey="id"
+              loading={isLoading}
+              pagination={false}
+              style={{ marginTop: '12px', width: '100%', fontSize: '12px' }}
+              size="small"
+            />
 
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={incidents?.length || 0}
-            onChange={(page, pageSize) => {
-              setCurrentPage(page)
-              setPageSize(pageSize)
-            }}
-            showSizeChanger
-            showQuickJumper
-            showTotal={total => `Total ${total} items`}
-            style={{ marginTop: '16px', textAlign: 'right' }}
-          />
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={incidents?.length || 0}
+              onChange={(page, pageSize) => {
+                setCurrentPage(page)
+                setPageSize(pageSize)
+              }}
+              showSizeChanger
+              showQuickJumper
+              showTotal={total => `Total ${total} items`}
+              style={{ marginTop: '16px', textAlign: 'right' }}
+            />
+          </div>
         </div>
+        <div style={{ height: '50%' }}></div>
       </div>
     </PageLayout>
   )
