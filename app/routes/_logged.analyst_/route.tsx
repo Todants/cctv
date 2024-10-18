@@ -11,6 +11,8 @@ import {
   DatePicker,
   TimePicker,
   Pagination,
+  Modal,
+  Image,
 } from 'antd'
 const { Title, Text } = Typography
 const { RangePicker } = DatePicker
@@ -29,6 +31,8 @@ export default function AnalystPage() {
   const [pageSize, setPageSize] = useState(10)
 
   const [filters, setFilters] = useState({})
+  const [selectedIncident, setSelectedIncident] = useState(null)
+  const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false)
 
   const {
     data: incidents,
@@ -130,7 +134,7 @@ export default function AnalystPage() {
       key: 'actions',
       render: (text: string, record: any) => (
         <Space size="small">
-          <Button onClick={() => handleViewHistory(record.id)} size="small">
+          <Button onClick={() => handleViewHistory(record)} size="small">
             View History
           </Button>
         </Space>
@@ -138,10 +142,45 @@ export default function AnalystPage() {
     },
   ]
 
-  const handleViewHistory = (incidentId: string) => {
-    // Implement view history logic here
-    console.log('View history for incident:', incidentId)
+  const handleViewHistory = (incident: any) => {
+    setSelectedIncident(incident)
+    setIsHistoryModalVisible(true)
   }
+
+  const handleCloseHistoryModal = () => {
+    setSelectedIncident(null)
+    setIsHistoryModalVisible(false)
+  }
+
+  const historyColumns = [
+    {
+      title: 'Date',
+      dataIndex: 'timestamp',
+      key: 'date',
+      render: (timestamp: string) => dayjs(timestamp).format('YYYY-MM-DD'),
+    },
+    {
+      title: 'Time',
+      dataIndex: 'timestamp',
+      key: 'time',
+      render: (timestamp: string) => dayjs(timestamp).format('HH:mm:ss'),
+    },
+    {
+      title: 'Incident Type',
+      dataIndex: ['incidentType', 'name'],
+      key: 'incidentType',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+    },
+    {
+      title: 'Comments',
+      dataIndex: 'comments',
+      key: 'comments',
+    },
+  ]
 
   return (
     <PageLayout layout="full-width">
@@ -259,6 +298,53 @@ export default function AnalystPage() {
         />
         <div style={{ height: 'calc(50% - 50px)' }}></div>
       </div>
+      <Modal
+        title="Incident History"
+        visible={isHistoryModalVisible}
+        onCancel={handleCloseHistoryModal}
+        width={1000}
+        footer={null}
+      >
+        {selectedIncident && (
+          <>
+            <Title level={4}>Surveillance Subject Information</Title>
+            <Table
+              columns={[
+                { title: 'Name', dataIndex: ['surveillanceObject', 'name'], key: 'name' },
+                { title: 'ID', dataIndex: ['surveillanceObject', 'id'], key: 'id' },
+                { title: 'Type', dataIndex: ['surveillanceObject', 'type'], key: 'type' },
+              ]}
+              dataSource={[selectedIncident]}
+              pagination={false}
+              size="small"
+            />
+            <Title level={4} style={{ marginTop: '20px' }}>Incident History</Title>
+            <Table
+              columns={historyColumns}
+              dataSource={[selectedIncident]} // Replace with actual incident history data
+              pagination={false}
+              size="small"
+            />
+            <Title level={4} style={{ marginTop: '20px' }}>Media</Title>
+            <Space size="large">
+              {selectedIncident.images && selectedIncident.images.map((image: string, index: number) => (
+                <Image
+                  key={index}
+                  src={image}
+                  width={200}
+                  alt={`Incident image ${index + 1}`}
+                />
+              ))}
+            </Space>
+            {selectedIncident.video && (
+              <video width="100%" controls style={{ marginTop: '20px' }}>
+                <source src={selectedIncident.video} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </>
+        )}
+      </Modal>
     </PageLayout>
   )
 }
