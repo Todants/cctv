@@ -179,35 +179,30 @@ export default function DispatcherPage() {
                 <Button onClick={handleViewHistory}>View History</Button>
               </>
             )}
-          </Space>
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]}>
-        <Col span={16}>{/* Placeholder for other content */}</Col>
-        <Col span={8}>
-          {selectedIncident && (
-            <div style={{ marginTop: '16px' }}>
-              <div
-                style={{
-                  height: '200px',
-                  backgroundColor: '#f0f0f0',
-                  marginBottom: '8px',
-                }}
-              >
-                {/* Placeholder for video/photo content */}
-                <Text>Video/Photo Content</Text>
+            {selectedIncident && (
+              <div style={{ marginTop: '16px' }}>
+                <div
+                  style={{
+                    height: '200px',
+                    backgroundColor: '#f0f0f0',
+                    marginBottom: '8px',
+                  }}
+                >
+                  {/* Placeholder for video/photo content */}
+                  <Text>Video/Photo Content</Text>
+                </div>
+                <Radio.Group
+                  onChange={e => setVideoMode(e.target.value)}
+                  value={videoMode}
+                  style={{ marginBottom: '8px' }}
+                >
+                  <Radio.Button value="photo">Photo Mode</Radio.Button>
+                  <Radio.Button value="video">Video Mode</Radio.Button>
+                </Radio.Group>
+                <Button onClick={handleClose}>Close</Button>
               </div>
-              <Radio.Group
-                onChange={e => setVideoMode(e.target.value)}
-                value={videoMode}
-                style={{ marginBottom: '8px' }}
-              >
-                <Radio.Button value="photo">Photo Mode</Radio.Button>
-                <Radio.Button value="video">Video Mode</Radio.Button>
-              </Radio.Group>
-              <Button onClick={handleClose}>Close</Button>
-            </div>
-          )}
+            )}
+          </Space>
         </Col>
       </Row>
     </PageLayout>
