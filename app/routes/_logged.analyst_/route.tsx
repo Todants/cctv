@@ -13,6 +13,9 @@ import {
   Pagination,
   Modal,
   Image,
+  Row,
+  Col,
+  Radio,
 } from 'antd'
 const { Title, Text } = Typography
 const { RangePicker } = DatePicker
@@ -32,7 +35,7 @@ export default function AnalystPage() {
 
   const [filters, setFilters] = useState({})
   const [selectedIncident, setSelectedIncident] = useState(null)
-  const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false)
+  const [mediaType, setMediaType] = useState('photo')
 
   const {
     data: incidents,
@@ -49,6 +52,13 @@ export default function AnalystPage() {
     where: filters,
     skip: (currentPage - 1) * pageSize,
     take: pageSize,
+  })
+
+  const { data: incidentHistory } = Api.incident.findMany.useQuery({
+    where: { id: selectedIncident?.id },
+    include: {
+      incidentType: true,
+    },
   })
 
   const { data: incidentTypes } = Api.incidentType.findMany.useQuery()
@@ -144,12 +154,6 @@ export default function AnalystPage() {
 
   const handleViewHistory = (incident: any) => {
     setSelectedIncident(incident)
-    setIsHistoryModalVisible(true)
-  }
-
-  const handleCloseHistoryModal = () => {
-    setSelectedIncident(null)
-    setIsHistoryModalVisible(false)
   }
 
   const historyColumns = [
@@ -184,8 +188,8 @@ export default function AnalystPage() {
 
   return (
     <PageLayout layout="full-width">
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <div style={{ padding: '8px', width: '100%', height: '50%', display: 'flex', flexDirection: 'column' }}>
+      <Row gutter={16} style={{ height: '100vh' }}>
+        <Col span={24}>
           <Form
             form={form}
             onFinish={handleSearch}
@@ -282,69 +286,112 @@ export default function AnalystPage() {
               size="small"
             />
           </div>
-        </div>
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={incidents?.length || 0}
-          onChange={(page, pageSize) => {
-            setCurrentPage(page)
-            setPageSize(pageSize)
-          }}
-          showSizeChanger
-          showQuickJumper
-          showTotal={total => `Total ${total} items`}
-          style={{ marginTop: '16px', textAlign: 'right' }}
-        />
-        <div style={{ height: 'calc(50% - 50px)' }}></div>
-      </div>
-      <Modal
-        title="Incident History"
-        visible={isHistoryModalVisible}
-        onCancel={handleCloseHistoryModal}
-        width={1000}
-        footer={null}
-      >
-        {selectedIncident && (
-          <>
-            <Title level={4}>Surveillance Subject Information</Title>
-            <Table
-              columns={[
-                { title: 'Name', dataIndex: ['surveillanceObject', 'name'], key: 'name' },
-                { title: 'ID', dataIndex: ['surveillanceObject', 'id'], key: 'id' },
-                { title: 'Type', dataIndex: ['surveillanceObject', 'type'], key: 'type' },
-              ]}
-              dataSource={[selectedIncident]}
-              pagination={false}
-              size="small"
-            />
-            <Title level={4} style={{ marginTop: '20px' }}>Incident History</Title>
-            <Table
-              columns={historyColumns}
-              dataSource={[selectedIncident]} // Replace with actual incident history data
-              pagination={false}
-              size="small"
-            />
-            <Title level={4} style={{ marginTop: '20px' }}>Media</Title>
-            <Space size="large">
-              {selectedIncident.images && selectedIncident.images.map((image: string, index: number) => (
-                <Image
-                  key={index}
-                  src={image}
-                  width={200}
-                  alt={`Incident image ${index + 1}`}
-                />
-              ))}
-            </Space>
-            {selectedIncident.video && (
-              <video width="100%" controls style={{ marginTop: '20px' }}>
-                <source src={selectedIncident.video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            )}
-          </>
-        )}
-      </Modal>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={incidents?.length || 0}
+            onChange={(page, pageSize) => {
+              setCurrentPage(page)
+              setPageSize(pageSize)
+            }}
+            showSizeChanger
+            showQuickJumper
+            showTotal={total => `Total ${total} items`}
+            style={{ marginTop: '16px', textAlign: 'right' }}
+          />
+          {selectedIncident && (
+            <div style={{ marginTop: '20px' }}>
+              <Title level={4}>Additional Information</Title>
+              <Table
+                columns={[
+                  { title: 'Parameter', dataIndex: 'parameter', key: 'parameter' },
+                  { title: 'Value', dataIndex: 'value', key: 'value' },
+                ]}
+                dataSource={[
+                  { parameter: 'Incident Number', value: selectedIncident.id },
+                  { parameter: 'Date', value: dayjs(selectedIncident.timestamp).format('YYYY-MM-DD') },
+                  { parameter: 'Time', value: dayjs(selectedIncident.timestamp).format('HH:mm:ss') },
+                  { parameter: 'Group', value: selectedIncident.incidentGroup?.name },
+                  { parameter: 'Surveillance Object', value: selectedIncident.surveillanceObject?.name },
+                  { parameter: 'Department', value: selectedIncident.department?.name },
+                  { parameter: 'Incident Type', value: selectedIncident.incidentType?.name },
+                  { parameter: 'Status', value: selectedIncident.status },
+                ]}
+                pagination={false}
+                size="small"
+              />
+            </div>
+          )}
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={12} style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', padding: '20px' }}>
+          {selectedIncident && (
+            <>
+              <Title level={4}>Surveillance Subject Information</Title>
+              <Table
+                columns={[
+                  { title: 'Name', dataIndex: ['surveillanceObject', 'name'], key: 'name' },
+                  { title: 'ID', dataIndex: ['surveillanceObject', 'id'], key: 'id' },
+                  { title: 'Type', dataIndex: ['surveillanceObject', 'type'], key: 'type' },
+                ]}
+                dataSource={[selectedIncident]}
+                pagination={false}
+                size="small"
+              />
+              <Title level={4} style={{ marginTop: '20px' }}>Incident History</Title>
+              <Table
+                columns={historyColumns}
+                dataSource={incidentHistory}
+                pagination={false}
+                size="small"
+              />
+            </>
+          )}
+        </Col>
+        <Col span={12} style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', padding: '20px' }}>
+          {selectedIncident && (
+            <>
+              <Title level={4}>Media</Title>
+              <Radio.Group onChange={(e) => setMediaType(e.target.value)} value={mediaType} style={{ marginBottom: '20px' }}>
+                <Radio.Button value="photo">Photo</Radio.Button>
+                <Radio.Button value="video">Video</Radio.Button>
+              </Radio.Group>
+              {mediaType === 'photo' && (
+                selectedIncident.images && selectedIncident.images.length > 0 ? (
+                  <Space size="large" style={{ marginBottom: '20px' }}>
+                    {selectedIncident.images.map((image: string, index: number) => (
+                      <Image
+                        key={index}
+                        src={image}
+                        width={200}
+                        height={150}
+                        alt={`Incident image ${index + 1}`}
+                      />
+                    ))}
+                  </Space>
+                ) : (
+                  <div style={{ width: 200, height: 150, backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
+                    <Text type="secondary">No image available</Text>
+                  </div>
+                )
+              )}
+              {mediaType === 'video' && (
+                selectedIncident.video ? (
+                  <video width="200" height="150" controls>
+                    <source src={selectedIncident.video} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <div style={{ width: 200, height: 150, backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Text type="secondary">No video available</Text>
+                  </div>
+                )
+              )}
+            </>
+          )}
+        </Col>
+      </Row>
     </PageLayout>
   )
 }
