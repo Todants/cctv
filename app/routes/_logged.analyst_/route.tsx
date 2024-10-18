@@ -145,120 +145,119 @@ export default function AnalystPage() {
 
   return (
     <PageLayout layout="full-width">
-      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-        <Title level={2}>Incident Analysis</Title>
-        <Text>
-          Filter and analyze incidents to quickly review and act on specific
-          events.
-        </Text>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div style={{ padding: '8px', width: '100%' }}>
+          <Form
+            form={form}
+            onFinish={handleSearch}
+            layout="inline"
+            style={{ marginTop: '8px', width: '100%' }}
+            size="small"
+          >
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'space-between' }}>
+              <Form.Item name="dateRange" label="Date and Time Range" style={{ flex: '1 1 300px' }}>
+                <RangePicker showTime style={{ width: '100%' }} size="small" />
+              </Form.Item>
+              <Form.Item name="specificHours" valuePropName="checked" style={{ flex: '0 0 auto' }}>
+                <Checkbox>Specific Hours</Checkbox>
+              </Form.Item>
+              <Form.Item name="group" label="Group" style={{ flex: '1 1 200px' }}>
+                <Select style={{ width: '100%' }} size="small">
+                  {incidentGroups?.map(group => (
+                    <Select.Option key={group.id} value={group.id}>
+                      {group.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="incidentType" label="Incident Type" style={{ flex: '1 1 200px' }}>
+                <Select style={{ width: '100%' }} size="small">
+                  {incidentTypes?.map(type => (
+                    <Select.Option key={type.id} value={type.id}>
+                      {type.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="vehicleNumber" label="Vehicle Number" style={{ flex: '1 1 200px' }}>
+                <Input size="small" />
+              </Form.Item>
+              <Form.Item name="wagonNumber" label="Wagon Number" style={{ flex: '1 1 200px' }}>
+                <Input size="small" />
+              </Form.Item>
+              <Form.Item name="attributeValue" label="Attribute Value" style={{ flex: '1 1 200px' }}>
+                <Input size="small" />
+              </Form.Item>
+              <Form.Item name="comments" label="Comments" style={{ flex: '1 1 300px' }}>
+                <Input.TextArea rows={1} size="small" />
+              </Form.Item>
+              <Form.Item name="priority" label="Priority" style={{ flex: '1 1 200px' }}>
+                <Select style={{ width: '100%' }} size="small">
+                  <Select.Option value="low">Low</Select.Option>
+                  <Select.Option value="medium">Medium</Select.Option>
+                  <Select.Option value="high">High</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="status" label="Status" style={{ flex: '1 1 200px' }}>
+                <Select style={{ width: '100%' }} size="small">
+                  <Select.Option value="new">New</Select.Option>
+                  <Select.Option value="resolved">Resolved</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="department" label="Department" style={{ flex: '1 1 200px' }}>
+                <Select style={{ width: '100%' }} size="small">
+                  {departments?.map(dept => (
+                    <Select.Option key={dept.id} value={dept.id}>
+                      {dept.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="surveillanceObject" label="Surveillance Object" style={{ flex: '1 1 200px' }}>
+                <Select style={{ width: '100%' }} size="small">
+                  {surveillanceObjects?.map(obj => (
+                    <Select.Option key={obj.id} value={obj.id}>
+                      {obj.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+            <Form.Item style={{ marginTop: '8px', width: '100%' }}>
+              <Space>
+                <Button type="primary" htmlType="submit" size="small">
+                  Search
+                </Button>
+                <Button onClick={handleReset} size="small">Reset</Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </div>
+        <div style={{ flex: 1, overflow: 'auto', padding: '12px', width: '100%' }}>
+          <Table
+            columns={columns}
+            dataSource={incidents}
+            rowKey="id"
+            loading={isLoading}
+            pagination={false}
+            style={{ marginTop: '12px', width: '100%' }}
+            size="small"
+          />
 
-        <Form
-          form={form}
-          onFinish={handleSearch}
-          layout="inline"
-          style={{ marginTop: '24px' }}
-        >
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between' }}>
-            <Form.Item name="dateRange" label="Date and Time Range" style={{ flex: '1 1 300px' }}>
-              <RangePicker showTime style={{ width: '100%' }} />
-            </Form.Item>
-            <Form.Item name="specificHours" valuePropName="checked" style={{ flex: '0 0 auto' }}>
-              <Checkbox>Specific Hours</Checkbox>
-            </Form.Item>
-            <Form.Item name="group" label="Group" style={{ flex: '1 1 200px' }}>
-              <Select style={{ width: '100%' }}>
-                {incidentGroups?.map(group => (
-                  <Select.Option key={group.id} value={group.id}>
-                    {group.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item name="incidentType" label="Incident Type" style={{ flex: '1 1 200px' }}>
-              <Select style={{ width: '100%' }}>
-                {incidentTypes?.map(type => (
-                  <Select.Option key={type.id} value={type.id}>
-                    {type.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item name="vehicleNumber" label="Vehicle Number" style={{ flex: '1 1 200px' }}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="wagonNumber" label="Wagon Number" style={{ flex: '1 1 200px' }}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="attributeValue" label="Attribute Value" style={{ flex: '1 1 200px' }}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="comments" label="Comments" style={{ flex: '1 1 300px' }}>
-              <Input.TextArea rows={1} />
-            </Form.Item>
-            <Form.Item name="priority" label="Priority" style={{ flex: '1 1 200px' }}>
-              <Select style={{ width: '100%' }}>
-                <Select.Option value="low">Low</Select.Option>
-                <Select.Option value="medium">Medium</Select.Option>
-                <Select.Option value="high">High</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="status" label="Status" style={{ flex: '1 1 200px' }}>
-              <Select style={{ width: '100%' }}>
-                <Select.Option value="new">New</Select.Option>
-                <Select.Option value="resolved">Resolved</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="department" label="Department" style={{ flex: '1 1 200px' }}>
-              <Select style={{ width: '100%' }}>
-                {departments?.map(dept => (
-                  <Select.Option key={dept.id} value={dept.id}>
-                    {dept.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item name="surveillanceObject" label="Surveillance Object" style={{ flex: '1 1 200px' }}>
-              <Select style={{ width: '100%' }}>
-                {surveillanceObjects?.map(obj => (
-                  <Select.Option key={obj.id} value={obj.id}>
-                    {obj.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </div>
-          <Form.Item style={{ marginTop: '16px', width: '100%' }}>
-            <Space>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button onClick={handleReset}>Reset</Button>
-            </Space>
-          </Form.Item>
-        </Form>
-
-        <Table
-          columns={columns}
-          dataSource={incidents}
-          rowKey="id"
-          loading={isLoading}
-          pagination={false}
-          style={{ marginTop: '24px' }}
-        />
-
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={incidents?.length || 0}
-          onChange={(page, pageSize) => {
-            setCurrentPage(page)
-            setPageSize(pageSize)
-          }}
-          showSizeChanger
-          showQuickJumper
-          showTotal={total => `Total ${total} items`}
-          style={{ marginTop: '16px', textAlign: 'right' }}
-        />
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={incidents?.length || 0}
+            onChange={(page, pageSize) => {
+              setCurrentPage(page)
+              setPageSize(pageSize)
+            }}
+            showSizeChanger
+            showQuickJumper
+            showTotal={total => `Total ${total} items`}
+            style={{ marginTop: '16px', textAlign: 'right' }}
+          />
+        </div>
       </div>
     </PageLayout>
   )
