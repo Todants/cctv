@@ -11,6 +11,20 @@ import { PageLayout } from '@/designSystem'
 export default function DispatcherPage() {
   const [selectedIncident, setSelectedIncident] = useState(null)
   const [videoMode, setVideoMode] = useState('photo')
+  const [tableHeight, setTableHeight] = useState('calc(100vh - 200px)')
+
+  useEffect(() => {
+    const updateTableHeight = () => {
+      const windowHeight = window.innerHeight
+      const offset = 200 // Adjust this value based on your layout
+      setTableHeight(`calc(${windowHeight}px - ${offset}px)`)
+    }
+
+    updateTableHeight()
+    window.addEventListener('resize', updateTableHeight)
+
+    return () => window.removeEventListener('resize', updateTableHeight)
+  }, [])
 
   const { data: incidents, isLoading } = Api.incident.findMany.useQuery({
     include: {
@@ -136,8 +150,8 @@ export default function DispatcherPage() {
             dataSource={incidents}
             columns={columns}
             rowKey="id"
-            scroll={{ y: 300 }}
-            pagination={{ position: ['bottomCenter'] }}
+            scroll={{ y: tableHeight }}
+            pagination={false}
             onRow={record => ({
               onClick: () => handleIncidentClick(record),
             })}
