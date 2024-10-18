@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Table, Button, Radio, Typography, Space, Row, Col } from 'antd'
+import React, { useState } from 'react'
+import { Table, Button, Radio, Typography, Space, Row, Col, Pagination } from 'antd'
 const { Title, Text } = Typography
 import { useUserContext } from '@/core/context'
 import dayjs from 'dayjs'
@@ -11,20 +11,8 @@ import { PageLayout } from '@/designSystem'
 export default function DispatcherPage() {
   const [selectedIncident, setSelectedIncident] = useState(null)
   const [videoMode, setVideoMode] = useState('photo')
-  const [tableHeight, setTableHeight] = useState('calc(100vh - 200px)')
-
-  useEffect(() => {
-    const updateTableHeight = () => {
-      const windowHeight = window.innerHeight
-      const offset = 200 // Adjust this value based on your layout
-      setTableHeight(`calc(${windowHeight}px - ${offset}px)`)
-    }
-
-    updateTableHeight()
-    window.addEventListener('resize', updateTableHeight)
-
-    return () => window.removeEventListener('resize', updateTableHeight)
-  }, [])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10 // Constant number of entries per page
 
   const { data: incidents, isLoading } = Api.incident.findMany.useQuery({
     include: {
@@ -33,6 +21,8 @@ export default function DispatcherPage() {
       surveillanceObject: true,
       camera: true,
     },
+    skip: (currentPage - 1) * pageSize,
+    take: pageSize,
   })
 
   const { mutateAsync: updateIncident } = Api.incident.update.useMutation()
@@ -150,11 +140,17 @@ export default function DispatcherPage() {
             dataSource={incidents}
             columns={columns}
             rowKey="id"
-            scroll={{ y: tableHeight }}
             pagination={false}
             onRow={record => ({
               onClick: () => handleIncidentClick(record),
             })}
+          />
+          <Pagination
+            current={currentPage}
+            total={1000} // Replace with actual total count of incidents
+            pageSize={pageSize}
+            onChange={setCurrentPage}
+            style={{ marginTop: '16px', textAlign: 'right' }}
           />
         </Col>
         <Col span={8}>
