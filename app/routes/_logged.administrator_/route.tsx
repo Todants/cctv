@@ -9,6 +9,7 @@ import {
   Select,
   Pagination,
   message,
+  Checkbox,
 } from 'antd'
 import { Prisma } from '@prisma/client'
 const { Title, Text } = Typography
@@ -41,6 +42,8 @@ export default function AdministratorPage() {
   const { mutateAsync: createUser } = Api.user.create.useMutation()
   const { mutateAsync: deleteUser } = Api.user.delete.useMutation()
   const { mutateAsync: updateUser } = Api.user.update.useMutation()
+  const { data: incidentGroups } = Api.incidentGroup.findMany.useQuery()
+  const { data: surveillanceObjects } = Api.surveillanceObject.findMany.useQuery()
 
   useEffect(() => {
     if (rolesData) setRoles(rolesData)
@@ -109,7 +112,27 @@ export default function AdministratorPage() {
   }
 
   const roleColumns = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
+    { title: 'Role Name', dataIndex: 'name', key: 'name' },
+    {
+      title: 'Available Incident Groups',
+      key: 'incidentGroups',
+      render: (text: string, record: Prisma.RoleDataGetPayload<{}>) => (
+        <Checkbox.Group
+          options={incidentGroups?.map(group => ({ label: group.name, value: group.id })) || []}
+          defaultValue={[]}
+        />
+      ),
+    },
+    {
+      title: 'Available Surveillance Objects',
+      key: 'surveillanceObjects',
+      render: (text: string, record: Prisma.RoleDataGetPayload<{}>) => (
+        <Checkbox.Group
+          options={surveillanceObjects?.map(obj => ({ label: obj.name, value: obj.id })) || []}
+          defaultValue={[]}
+        />
+      ),
+    },
     {
       title: 'Actions',
       key: 'actions',
@@ -211,6 +234,16 @@ export default function AdministratorPage() {
               ]}
             >
               <Input placeholder="Role Name" />
+            </Form.Item>
+            <Form.Item name="incidentGroups" label="Available Incident Groups">
+              <Checkbox.Group
+                options={incidentGroups?.map(group => ({ label: group.name, value: group.id })) || []}
+              />
+            </Form.Item>
+            <Form.Item name="surveillanceObjects" label="Available Surveillance Objects">
+              <Checkbox.Group
+                options={surveillanceObjects?.map(obj => ({ label: obj.name, value: obj.id })) || []}
+              />
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
